@@ -100,4 +100,6 @@ sed -i '/^admin=/d' /opt/eap/standalone/configuration/mgmt-users.properties
 ```
 
 
+## What does each section mean?
+
 
