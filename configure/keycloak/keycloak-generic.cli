@@ -1,33 +1,71 @@
-embed-server --server-config=standalone.xml --std-out=echo
+# Vars expected from the environment:
+#   WAR_NAME               (e.g. secured-api.war)
+#   PROVIDER_URL           (e.g. https://keycloak.example/realms/eap-apps)
+#   CLIENT_ID              (e.g. eap8-api)
+#   BEARER_ONLY            (true/false)
+#   PUBLIC_CLIENT          (true/false)
+#   SSL_REQUIRED           (EXTERNAL|ALL|NONE)
+#   PRINCIPAL_ATTR         (e.g. preferred_username)
+#   USE_RESOURCE_ROLES     (true/false)
+#   VERIFY_TOKEN_AUD       (true/false)
+#   TRUSTSTORE_PATH        (optional, for custom CA)
+#   TRUSTSTORE_PASSWORD    (optional)
+#   CLIENT_KEYSTORE_PATH   (optional, for mTLS)
+#   CLIENT_KEYSTORE_PASSWORD (optional)
+#   CLIENT_KEY_PASSWORD      (optional)
+
+embed-server --std-out=echo
+
+#########
+# elytron
+#########
 
 if (outcome != success) of /extension=org.wildfly.extension.elytron-oidc-client:read-resource
-    /extension=org.wildfly.extension.elytron-oidc-client:add()
+  /extension=org.wildfly.extension.elytron-oidc-client:add()
 end-if
-
 if (outcome != success) of /subsystem=elytron-oidc-client:read-resource
-    /subsystem=elytron-oidc-client:add()
+  /subsystem=elytron-oidc-client:add()
 end-if
 
-/subsystem=elytron-oidc-client/provider=keycloak-provider:add( \
-    provider-url="http://192.168.31.200:8080/realms/eap-apps" \
-)
+#########
+# elytron pps
+#########
 
-# Then each app references the provider
-/subsystem=elytron-oidc-client/secure-deployment=secured-api.war:add( \
-    provider=keycloak-provider, \
-    client-id="eap8-api", \
-    public-client=true, \
-    ssl-required="EXTERNAL", \
-    bearer-only=true, \
-    principal-attribute="preferred_username" \
-)
+if (outcome != success) of /subsystem=elytron-oidc-client/secure-deployment=${env.WAR_NAME}:read-resource
+  /subsystem=elytron-oidc-client/secure-deployment=${env.WAR_NAME}:add(
+    provider-url="${env.PROVIDER_URL}",
+    client-id="${env.CLIENT_ID}",
+    bearer-only=${env.BEARER_ONLY:false},
+    public-client=${env.PUBLIC_CLIENT:true},
+    ssl-required="${env.SSL_REQUIRED:EXTERNAL}",
+    principal-attribute="${env.PRINCIPAL_ATTR:preferred_username}",
+    use-resource-role-mappings=${env.USE_RESOURCE_ROLES:false},
+    verify-token-audience=${env.VERIFY_TOKEN_AUD:false}
+  )
+else
+  /subsystem=elytron-oidc-client/secure-deployment=${env.WAR_NAME}:write-attribute(name=provider-url, value="${env.PROVIDER_URL}")
+  /subsystem=elytron-oidc-client/secure-deployment=${env.WAR_NAME}:write-attribute(name=client-id, value="${env.CLIENT_ID}")
+  /subsystem=elytron-oidc-client/secure-deployment=${env.WAR_NAME}:write-attribute(name=bearer-only, value=${env.BEARER_ONLY:false})
+  /subsystem=elytron-oidc-client/secure-deployment=${env.WAR_NAME}:write-attribute(name=public-client, value=${env.PUBLIC_CLIENT:true})
+  /subsystem=elytron-oidc-client/secure-deployment=${env.WAR_NAME}:write-attribute(name=ssl-required, value="${env.SSL_REQUIRED:EXTERNAL}")
+  /subsystem=elytron-oidc-client/secure-deployment=${env.WAR_NAME}:write-attribute(name=principal-attribute, value="${env.PRINCIPAL_ATTR:preferred_username}")
+  /subsystem=elytron-oidc-client/secure-deployment=${env.WAR_NAME}:write-attribute(name=use-resource-role-mappings, value=${env.USE_RESOURCE_ROLES:false})
+  /subsystem=elytron-oidc-client/secure-deployment=${env.WAR_NAME}:write-attribute(name=verify-token-audience, value=${env.VERIFY_TOKEN_AUD:false})
+end-if
 
-/subsystem=elytron-oidc-client/secure-deployment=another-app.war:add( \
-    provider=keycloak-provider, \
-    client-id="another-client", \
-    public-client=true, \
-    ssl-required="EXTERNAL", \
-    bearer-only=true \
-)
+#########
+# elytron -tls
+#########
+
+if (result != undefined) of :resolve-expression(expression=${env.TRUSTSTORE_PATH:})
+  /subsystem=elytron-oidc-client/secure-deployment=${env.WAR_NAME}:write-attribute(name=truststore, value="${env.TRUSTSTORE_PATH}")
+  /subsystem=elytron-oidc-client/secure-deployment=${env.WAR_NAME}:write-attribute(name=truststore-password, value="${env.TRUSTSTORE_PASSWORD:}")
+end-if
+
+if (result != undefined) of :resolve-expression(expression=${env.CLIENT_KEYSTORE_PATH:})
+  /subsystem=elytron-oidc-client/secure-deployment=${env.WAR_NAME}:write-attribute(name=client-keystore, value="${env.CLIENT_KEYSTORE_PATH}")
+  /subsystem=elytron-oidc-client/secure-deployment=${env.WAR_NAME}:write-attribute(name=client-keystore-password, value="${env.CLIENT_KEYSTORE_PASSWORD:}")
+  /subsystem=elytron-oidc-client/secure-deployment=${env.WAR_NAME}:write-attribute(name=client-key-password, value="${env.CLIENT_KEY_PASSWORD:}")
+end-if
 
 stop-embedded-server
