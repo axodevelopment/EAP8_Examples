@@ -1,0 +1,33 @@
+embed-server --server-config=standalone.xml --std-out=echo
+
+if (outcome != success) of /extension=org.wildfly.extension.elytron-oidc-client:read-resource
+    echo "Adding elytron-oidc-client extension..."
+    /extension=org.wildfly.extension.elytron-oidc-client:add()
+end-if
+
+if (outcome != success) of /subsystem=elytron-oidc-client:read-resource
+    echo "Adding elytron-oidc-client subsystem..."
+    /subsystem=elytron-oidc-client:add()
+end-if
+
+if (outcome == success) of /subsystem=elytron-oidc-client/secure-deployment=secured-api.war:read-resource
+    echo "Updating existing secure-deployment for secured-api.war..."
+
+    /subsystem=elytron-oidc-client/secure-deployment=secured-api.war:write-attribute(name=provider-url, value="http://192.168.31.200:8080/realms/eap-apps")
+    /subsystem=elytron-oidc-client/secure-deployment=secured-api.war:write-attribute(name=client-id, value="eap8-api")
+    /subsystem=elytron-oidc-client/secure-deployment=secured-api.war:write-attribute(name=public-client, value=true)
+    /subsystem=elytron-oidc-client/secure-deployment=secured-api.war:write-attribute(name=ssl-required, value="EXTERNAL")
+    /subsystem=elytron-oidc-client/secure-deployment=secured-api.war:write-attribute(name=bearer-only, value=true)
+else
+    echo "Adding secure-deployment for secured-api.war..."
+    
+    /subsystem=elytron-oidc-client/secure-deployment=secured-api.war:add(
+        provider-url="http://192.168.31.200:8080/realms/eap-apps",
+        client-id="eap8-api",
+        public-client=true,
+        ssl-required="EXTERNAL",
+        bearer-only=true
+    )
+end-if
+
+stop-embedded-server

@@ -1,0 +1,3 @@
+com/example/api/RestApplication.class
+com/example/api/SecuredEndpoint.class
+com/example/api/PublicEndpoint.class

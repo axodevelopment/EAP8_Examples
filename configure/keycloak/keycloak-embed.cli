@@ -10,11 +10,12 @@ if (outcome != success) of /subsystem=elytron-oidc-client:read-resource
     /subsystem=elytron-oidc-client:add()
 end-if
 
-/subsystem=elytron-oidc-client/realm=eap-apps-realm:add( \
-    auth-server-url="http://192.168.31.200:8080", \
-    realm-name="eap-apps", \
-    resource="eap8-api", \
-    bearer-only=true, \
-    ssl-required=EXTERNAL)
+/subsystem=elytron-oidc-client/secure-deployment=secured-api.war:add( \
+    provider-url="http://192.168.31.200:8080/realms/eap-apps", \
+    client-id="eap8-api", \
+    public-client=true, \
+    ssl-required="EXTERNAL", \
+    bearer-only=true \
+)
 
 stop-embedded-server

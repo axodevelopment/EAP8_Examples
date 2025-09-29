@@ -6,10 +6,10 @@ ENV JAVA_HOME=/usr/lib/jvm/java-21-openjdk
 ENV PATH=$JAVA_HOME/bin:$PATH
 
 RUN mkdir -p /opt/eap-im/current
-RUN mkdir -p /opt/eap-config
+RUN mkdir -p /opt/eap-config/keycloak
 
-COPY install/EAP8 /opt/eap-im/current
-COPY configure/keycloak /opt/eap-config
+COPY install/eap8 /opt/eap-im/current
+COPY configure/keycloak/keycloak-embed.cli /opt/eap-config/keycloak/keycloak-embed.cli
 
 ENV EAP_IM_HOME=/opt/eap-im/current
 ENV JBOSS_HOME=/opt/eap
@@ -23,7 +23,9 @@ RUN "$EAP_IM_HOME/bin/jboss-eap-installation-manager.sh" install \
 RUN echo "Checking for messaging subsystem..." \
  && grep -r "messaging" "$JBOSS_HOME/standalone/configuration/" || echo "No messaging found"
 
-RUN "$JBOSS_HOME/bin/jboss-cli.sh" --file="/opt/eap-config/keycloak/keycloak.cli"
+RUN "$JBOSS_HOME/bin/jboss-cli.sh" --file="/opt/eap-config/keycloak/keycloak-embed.cli"
+
+COPY examples/OIDC/target/secured-api.war $JBOSS_HOME/standalone/deployments/
 
 EXPOSE 8080 9990
 CMD ["bash","-lc","$JBOSS_HOME/bin/standalone.sh -b 0.0.0.0 -bmanagement 0.0.0.0"]
