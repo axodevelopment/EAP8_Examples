@@ -8,6 +8,7 @@ ENV PATH=$JAVA_HOME/bin:$PATH
 RUN mkdir -p /opt/eap-im/current
 RUN mkdir -p /opt/eap-config/keycloak
 
+# I've downloaded into my local install directory the EAP8 installation manager
 COPY install/eap8 /opt/eap-im/current
 COPY configure/keycloak/keycloak-embed.cli /opt/eap-config/keycloak/keycloak-embed.cli
 

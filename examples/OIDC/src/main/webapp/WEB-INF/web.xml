@@ -7,7 +7,6 @@
 
     <display-name>Secured REST API</display-name>
 
-    <!-- Secure the /api/secured/* endpoints -->
     <security-constraint>
         <web-resource-collection>
             <web-resource-name>Secured Resources</web-resource-name>
@@ -19,18 +18,21 @@
         </auth-constraint>
     </security-constraint>
 
-    <!-- Use OIDC for authentication (configured via Elytron) -->
     <login-config>
         <auth-method>OIDC</auth-method>
         <realm-name>eap-apps-realm</realm-name>
     </login-config>
 
-    <!-- Define security roles -->
     <security-role>
         <role-name>user</role-name>
     </security-role>
     <security-role>
         <role-name>admin</role-name>
     </security-role>
+
+    <context-param>
+        <param-name>resteasy.role.based.security</param-name>
+        <param-value>true</param-value>
+    </context-param>
 
 </web-app>

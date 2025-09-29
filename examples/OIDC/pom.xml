@@ -17,7 +17,6 @@
     </properties>
 
     <dependencies>
-        <!-- Jakarta EE 10 Web Profile (all you need for REST + Security) -->
         <dependency>
             <groupId>jakarta.platform</groupId>
             <artifactId>jakarta.jakartaee-web-api</artifactId>

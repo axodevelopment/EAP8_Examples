@@ -15,13 +15,15 @@ import java.util.Map;
 public class SecuredEndpoint {
 
     @GET
-    @Path("/hello")
+    @Path("/user")
     @RolesAllowed("user")
-    public Map<String, String> securedHello(@Context SecurityContext securityContext) {
+    public Map<String, String> userOnly(@Context SecurityContext securityContext) {
         Map<String, String> response = new HashMap<>();
-        response.put("message", "Hello from secured endpoint!");
+
+        response.put("message", "OIDC - User Role Access");
         response.put("user", securityContext.getUserPrincipal().getName());
         response.put("authenticated", String.valueOf(securityContext.getUserPrincipal() != null));
+
         return response;
     }
 
@@ -30,8 +32,10 @@ public class SecuredEndpoint {
     @RolesAllowed("admin")
     public Map<String, String> adminOnly(@Context SecurityContext securityContext) {
         Map<String, String> response = new HashMap<>();
-        response.put("message", "Admin access granted");
+        
+        response.put("message", "OIDC - Admin Role Access");
         response.put("user", securityContext.getUserPrincipal().getName());
+        
         return response;
     }
 
@@ -40,11 +44,14 @@ public class SecuredEndpoint {
     @RolesAllowed({"user", "admin"})
     public Map<String, Object> getUserInfo(@Context SecurityContext securityContext) {
         Map<String, Object> response = new HashMap<>();
+
         response.put("username", securityContext.getUserPrincipal().getName());
         response.put("isSecure", securityContext.isSecure());
         response.put("authScheme", securityContext.getAuthenticationScheme());
+        
         response.put("isUserInUserRole", securityContext.isUserInRole("user"));
         response.put("isUserInAdminRole", securityContext.isUserInRole("admin"));
+
         return response;
     }
 }

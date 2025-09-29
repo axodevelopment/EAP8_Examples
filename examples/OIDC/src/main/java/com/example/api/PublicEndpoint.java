@@ -15,7 +15,9 @@ public class PublicEndpoint {
     @Path("/hello")
     public Map<String, String> publicHello() {
         Map<String, String> response = new HashMap<>();
-        response.put("message", "Hello from public endpoint - no auth required!");
+
+        response.put("message", "Public endpoint - OIDC - No Access Checked");
+
         return response;
     }
 
@@ -23,8 +25,10 @@ public class PublicEndpoint {
     @Path("/health")
     public Map<String, String> health() {
         Map<String, String> response = new HashMap<>();
+
         response.put("status", "UP");
         response.put("timestamp", String.valueOf(System.currentTimeMillis()));
+
         return response;
     }
 }
