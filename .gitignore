@@ -26,3 +26,6 @@ go.work.sum
 
 # ignore folders
 install/
+
+examples/OIDC/target
+examples/resteap7/hello-eap7-api/target

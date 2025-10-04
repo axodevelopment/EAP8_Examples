@@ -1,32 +1,18 @@
-FROM registry.access.redhat.com/ubi9/ubi
+FROM registry.access.redhat.com/ubi8/ubi
 
-RUN dnf -y install java-21-openjdk java-21-openjdk-devel unzip findutils && dnf clean all
+RUN yum install -y java-11-openjdk java-11-openjdk-devel && \
+    yum clean all && \
+    alternatives --install /usr/bin/java java /usr/lib/jvm/java-11-openjdk/bin/java 200
 
-ENV JAVA_HOME=/usr/lib/jvm/java-21-openjdk
+ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk
 ENV PATH=$JAVA_HOME/bin:$PATH
 
-RUN mkdir -p /opt/eap-im/current
-RUN mkdir -p /opt/eap-config/keycloak
+RUN mkdir -p /opt/jboss-eap-7.4
 
-# I've downloaded into my local install directory the EAP8 installation manager
-COPY install/eap8 /opt/eap-im/current
-COPY configure/keycloak/keycloak-embed.cli /opt/eap-config/keycloak/keycloak-embed.cli
+COPY install/eap7 /opt/jboss-eap-7.4
+ENV JBOSS_HOME=/opt/jboss-eap-7.4
 
-ENV EAP_IM_HOME=/opt/eap-im/current
-ENV JBOSS_HOME=/opt/eap
-
-RUN "$EAP_IM_HOME/bin/jboss-eap-installation-manager.sh" install \
-      --profile=eap-8.0 \
-      --dir "$JBOSS_HOME" \
-      --accept-license-agreements \
-  && rm -rf "$JBOSS_HOME/standalone/tmp" "$JBOSS_HOME/standalone/log"
-
-RUN echo "Checking for messaging subsystem..." \
- && grep -r "messaging" "$JBOSS_HOME/standalone/configuration/" || echo "No messaging found"
-
-RUN "$JBOSS_HOME/bin/jboss-cli.sh" --file="/opt/eap-config/keycloak/keycloak-embed.cli"
-
-COPY examples/OIDC/target/secured-api.war $JBOSS_HOME/standalone/deployments/
+COPY examples/resteap7/hello-eap7-api/target/hello-eap7-api-1.0.war $JBOSS_HOME/standalone/deployments/
 
 EXPOSE 8080 9990
-CMD ["bash","-lc","$JBOSS_HOME/bin/standalone.sh -b 0.0.0.0 -bmanagement 0.0.0.0"]
+CMD ["/opt/jboss-eap-7.4/bin/standalone.sh", "-b", "0.0.0.0"]
