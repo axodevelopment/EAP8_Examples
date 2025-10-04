@@ -54,6 +54,5 @@ Test some endpoints
 ```bash
 curl -i http://localhost:8080/myapi/api/hello
 
-curl -i http://localhost:8080/myapi/api/secured/me \
-  -H "Authorization: Bearer $TOKEN"
+curl -i http://localhost:8080/myapi/api/secured/me -H "Authorization: Bearer $TOKEN"
 ```

@@ -1,0 +1,22 @@
+embed-server --server-config=standalone.xml --std-out=echo
+
+if (outcome != success) of /extension=org.wildfly.extension.elytron-oidc-client:read-resource
+    echo "Adding elytron-oidc-client extension..."
+    /extension=org.wildfly.extension.elytron-oidc-client:add()
+end-if
+
+if (outcome != success) of /subsystem=elytron-oidc-client:read-resource
+    echo "Adding elytron-oidc-client subsystem..."
+    /subsystem=elytron-oidc-client:add()
+end-if
+
+/subsystem=elytron-oidc-client/secure-deployment=eap8-api.war:add( \
+    provider-url="http://192.168.31.200:8080/realms/eap-apps", \
+    client-id="eap8-api", \
+    public-client=true, \
+    ssl-required="EXTERNAL", \
+    bearer-only=true, \
+    principal-attribute="preferred_username" \
+)
+
+stop-embedded-server
