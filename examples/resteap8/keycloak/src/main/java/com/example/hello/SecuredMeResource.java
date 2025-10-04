@@ -8,9 +8,10 @@ import jakarta.ws.rs.core.MediaType;
 @Path("secured")
 public class SecuredMeResource {
     
+  @GET
+  @Path("me")
+  public String me() {
 
-    public String me() {
-        
-    }
+  }
 
 }
