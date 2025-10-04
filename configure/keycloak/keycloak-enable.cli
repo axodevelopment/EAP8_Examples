@@ -1,0 +1,11 @@
+embed-server --server-config=standalone.xml --std-out=echo
+
+if (outcome != success) of /extension=org.keycloak.keycloak-adapter-subsystem:read-resource
+  /extension=org.keycloak.keycloak-adapter-subsystem:add
+end-if
+
+if (outcome != success) of /subsystem=keycloak:read-resource
+  /subsystem=keycloak:add
+end-if
+
+stop-embedded-server

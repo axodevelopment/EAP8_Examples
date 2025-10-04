@@ -99,6 +99,9 @@ sed -i '/^admin=/d' /opt/eap/standalone/configuration/mgmt-users.properties
 /opt/eap/bin/add-user.sh
 ```
 
+```bash
+TOKEN=$(curl -s -X POST \\n  http://192.168.31.200:8080/realms/eap-apps/protocol/openid-connect/token \\n  -d "client_id=eap8-api" \\n  -d "username=testuser" \\n  -d "password=password123" \\n  -d "grant_type=password" | jq -r '.access_token')
+```
 
 ## What does each section mean?
 

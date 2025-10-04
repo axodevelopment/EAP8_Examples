@@ -1,0 +1,24 @@
+embed-server --server-config=standalone.xml --std-out=echo --timeout=300
+
+if (outcome != success) of /extension=org.keycloak.keycloak-adapter-subsystem:read-resource
+  /extension=org.keycloak.keycloak-adapter-subsystem:add
+end-if
+if (outcome != success) of /subsystem=keycloak:read-resource
+  /subsystem=keycloak:add
+end-if
+
+if (outcome != success) of /subsystem=keycloak/secure-deployment=hello-eap7-api-1.0.war:read-resource
+  /subsystem=keycloak/secure-deployment=hello-eap7-api-1.0.war:add()
+end-if
+
+# Write attributes (bearer-only) to match your realm/client
+/subsystem=keycloak/secure-deployment=hello-eap7-api-1.0.war:write-attribute(name=realm, value=eap-apps)
+/subsystem=keycloak/secure-deployment=hello-eap7-api-1.0.war:write-attribute(name=resource, value=eap8-api)
+/subsystem=keycloak/secure-deployment=hello-eap7-api-1.0.war:write-attribute(name=bearer-only, value=true)
+/subsystem=keycloak/secure-deployment=hello-eap7-api-1.0.war:write-attribute(name="auth-server-url", value="http://192.168.31.200:8080")
+/subsystem=keycloak/secure-deployment=hello-eap7-api-1.0.war:write-attribute(name=ssl-required, value=EXTERNAL)
+/subsystem=keycloak/secure-deployment=hello-eap7-api-1.0.war:write-attribute(name=principal-attribute, value=preferred_username)
+/subsystem=keycloak/secure-deployment=hello-eap7-api-1.0.war:write-attribute(name=verify-token-audience, value=true)
+/subsystem=keycloak/secure-deployment=hello-eap7-api-1.0.war:write-attribute(name=use-resource-role-mappings, value=true)
+
+stop-embedded-server
