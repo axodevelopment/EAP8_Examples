@@ -51,25 +51,45 @@ public class TokenPlaygroundResource {
   @GET
   @Path("mint-local-jwt")
   @Produces(MediaType.APPLICATION_JSON)
-  public String mintLocalJwt() throws Exception {
+  public String mintLocalJwt() {
+    try {
+      KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
+      kpg.initialize(2048);
+      KeyPair kp = kpg.generateKeyPair();
 
-    KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
-    kpg.initialize(2048);
-    KeyPair kp = kpg.generateKeyPair();
+      Instant now = Instant.now();
 
-    Instant now = Instant.now();
-    String signed = Jwt
-        .issuer("demo-issuer")
-        .subject("demo-user")
-        .audience("eap8-api")
-        .issuedAt(now)
-        .expiresAt(now.plusSeconds(300))
-        .jws().keyId("demo-kid").sign(kp.getPrivate());
+      Map<String, Object> header = Map.of(
+          "alg", "RS256",
+          "typ", "JWT",
+          "kid", "demo-kid"
+      );
 
-    return "{\"access_token\":\"" + signed + "\"," +
-           "\"expires_in\":300," +
-           "\"refresh_expires_in\":0," +
-           "\"not-before-policy\":0," +
-           "\"note\":\"locally signed demo jwt\"}";
+      Map<String, Object> payload = Map.of(
+          "iss", "demo-issuer",
+          "sub", "demo-user",
+          // For a proper OIDC audience you may prefer an ARRAY: List.of("eap8-api")
+          "aud", "eap8-api",
+          "iat", now.getEpochSecond(),
+          "exp", now.plusSeconds(300).getEpochSecond()
+      );
+
+      String jwt = JwtUtils.buildJwtRS256(header, payload, kp.getPrivate());
+
+      JsonObject resp = Json.createObjectBuilder()
+          .add("access_token", jwt)
+          .add("expires_in", 300)
+          .add("refresh_expires_in", 0)
+          .add("not-before-policy", 0)
+          .add("note", "locally signed demo jwt")
+          .build();
+
+      return resp.toString();
+    } catch (Exception e) {
+      return Json.createObjectBuilder()
+          .add("error", "jwt-mint-failed")
+          .add("detail", e.getClass().getName())
+          .build().toString();
+    }
   }*/
 }
