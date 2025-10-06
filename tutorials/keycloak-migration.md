@@ -69,7 +69,7 @@ reasteap8 uses jakarta eleytron components.
 
 
 | Func | EAP 7.4 | EAP 8 (Jakarta) | EAP 8 + MicroProfile | Notes |
-|--------------------|--------------------------------|------------------|-|
+|--------------------|--------------------------------|------------------|-|-|
 | OAuth2 Constants | `OAuth2Constants` | Literal strings | Literal strings | Things like `BEARER_TOKEN_TYPE` are just the literal "Bearer". Use the HTTP Authorization header ("Bearer <token>") |
 | Keystore Utils | `KeystoreUtil` | `java.security.KeyStore` | `java.security.KeyStore` | `java.security.KeyStore`, `KeyPairGenerator`, `KeyFactory`, `KeyStore.Builder` |
 | Build JWT | `JWSBuilder` | JJWT library | `io.smallrye.jwt.build.Jwt` | smallrye or MicroProfile have JWT |
