@@ -21,18 +21,6 @@ RUN "$EAP_IM_HOME/bin/jboss-eap-installation-manager.sh" install \
       --accept-license-agreements \
   && rm -rf "$JBOSS_HOME/standalone/tmp" "$JBOSS_HOME/standalone/log"
 
-RUN "$EAP_IM_HOME/bin/jboss-eap-installation-manager.sh" channel add \
-    --channel-name eap-xp-5.0 \
-    --repositories mrrc-ga::https://maven.repository.redhat.com/ga \
-    --manifest org.jboss.eap.channels:eap-xp-5.0 \
-    --dir "$JBOSS_HOME"
-
-RUN "$EAP_IM_HOME/bin/jboss-eap-installation-manager.sh" feature-pack add \
-      --fpl org.jboss.eap.xp:wildfly-galleon-pack \
-      --dir "$JBOSS_HOME" \
- && rm -rf "$JBOSS_HOME/standalone/tmp" "$JBOSS_HOME/standalone/log"
-
-
 RUN "$JBOSS_HOME/bin/jboss-cli.sh" --file="/opt/eap-config/keycloak/keycloak.cli"
 
 COPY examples/resteap8/keycloak/target/eap8-api.war $JBOSS_HOME/standalone/deployments/

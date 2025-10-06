@@ -56,3 +56,25 @@ curl -i http://localhost:8080/myapi/api/hello
 
 curl -i http://localhost:8080/myapi/api/secured/me -H "Authorization: Bearer $TOKEN"
 ```
+
+## Function Mapping (In progress not fully vetted)
+
+Two projects in this attempt to describe the function mapping in practice.
+
+- examples/resteap8/keycloak
+- examples/resteap7/keycloak
+
+within reasteap7 this uses the keycloak adapter for 7
+reasteap8 uses jakarta eleytron components.
+
+
+| Func | EAP 7.4 | EAP 8 (Jakarta) | EAP 8 + MicroProfile |
+|--------------------|--------------------------------|------------------|-|
+| OAuth2 Constants | OAuth2Constants | Literal strings | Literal strings |
+| Keystore Utils | KeystoreUtil | java.security.KeyStore | java.security.KeyStore |
+| Build JWT | JWSBuilder | JJWT library | io.smallrye.jwt.build.Jwt |
+| Parse JWT | JWSInput | Manual parsing | @Inject JsonWebToken |
+| Access Token | AccessToken | OidcSecurityContext | JsonWebToken |
+| Token Response | AccessTokenResponse | Manual JSON parsing | Manual JSON parsing |
+| ID Token | IDToken | Claims in token | JsonWebToken.getClaim() |
+| JSON Serialize | JsonSerialization | JSON-B or JSON-P | JSON-B or JSON-P |
