@@ -70,11 +70,11 @@ reasteap8 uses jakarta eleytron components.
 
 | Func | EAP 7.4 | EAP 8 (Jakarta) | EAP 8 + MicroProfile |
 |--------------------|--------------------------------|------------------|-|
-| OAuth2 Constants | OAuth2Constants | Literal strings | Literal strings |
-| Keystore Utils | KeystoreUtil | java.security.KeyStore | java.security.KeyStore |
-| Build JWT | JWSBuilder | JJWT library | io.smallrye.jwt.build.Jwt |
-| Parse JWT | JWSInput | Manual parsing | @Inject JsonWebToken |
-| Access Token | AccessToken | OidcSecurityContext | JsonWebToken |
-| Token Response | AccessTokenResponse | Manual JSON parsing | Manual JSON parsing |
-| ID Token | IDToken | Claims in token | JsonWebToken.getClaim() |
-| JSON Serialize | JsonSerialization | JSON-B or JSON-P | JSON-B or JSON-P |
+| OAuth2 Constants | `OAuth2Constants` | Literal strings | Literal strings |
+| Keystore Utils | `KeystoreUtil` | `java.security.KeyStore` | `java.security.KeyStore` |
+| Build JWT | `JWSBuilder` | JJWT library | `io.smallrye.jwt.build.Jwt` |
+| Parse JWT | `JWSInput` | Manual parsing | `@Inject JsonWebToken` |
+| Access Token | `AccessToken` | `OidcSecurityContext` | `JsonWebToken` |
+| Token Response | `AccessTokenResponse` | Manual JSON parsing | Manual JSON parsing |
+| ID Token | `IDToken` | Claims in token | `JsonWebToken.getClaim()` |
+| JSON Serialize | `JsonSerialization` | JSON-B or JSON-P | JSON-B or JSON-P |
